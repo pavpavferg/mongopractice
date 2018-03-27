@@ -6,7 +6,7 @@ db.product.aggregate([
         "from": "classification",
         "as": "_cls",
         "let": {
-            "vendor_id": "$values.MP_PRIM_VENDOR_ID",
+            "vendor_id": "$values.MP_PRIM_VENDOR_ID"
         },
         pipeline: [
             { $match: {
@@ -18,26 +18,20 @@ db.product.aggregate([
                 }
             } },
             { $project: {
-                _id: "$$vendor_id",
                 "name": "$name"
             } }
         ]
     } },
     {$unwind: {
         path: "$_cls",
-        "preserveNullAndEmptyArrays": false
+        "preserveNullAndEmptyArrays": true
     } },
     {$lookup: {
         "from": "attribute",
         "as": "_attr",
-        "let": {
-            "name": "$_cls.name",
-        },
         pipeline: [
             { $match: {
-                $expr: {
-                    $eq: ["$_id", "$$name"]
-                }
+                "_id": "PW_CURRENT_PRICE"
             } },
             { $project: {
                 "alias": "$values.attribute．Alias"
@@ -46,12 +40,14 @@ db.product.aggregate([
     } },
     {$unwind: {
         path: "$_attr",
-        "preserveNullAndEmptyArrays": false
+        "preserveNullAndEmptyArrays": true
     } },
     {$project: {
+        "_id": 0,
         "product id": "$_id",
         "name": "$_cls.name",
-        "alias": "$_attr.alias"
+        "alias": "$_attr.alias",
+        "price": "$values.PW_CURRENT_PRICE"
     } }
 ])
 

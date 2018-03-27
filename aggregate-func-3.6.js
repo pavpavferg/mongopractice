@@ -19,14 +19,13 @@ f = function(x) {
                     }
                 } },
                 { $project: {
-                    _id: "$$vendor_id",
                     "name": "$name"
                 } }
             ]
         } },
         {$unwind: {
             path: "$_cls",
-            "preserveNullAndEmptyArrays": false
+            "preserveNullAndEmptyArrays": true
         } },
         {$lookup: {
             "from": "attribute",
@@ -36,9 +35,7 @@ f = function(x) {
             },
             pipeline: [
                 { $match: {
-                    $expr: {
-                        $eq: ["$_id", "$$name"]
-                    }
+                    "_id": "PW_CURRENT_PRICE"
                 } },
                 { $project: {
                     "alias": "$values.attribute．Alias"
@@ -47,18 +44,19 @@ f = function(x) {
         } },
         {$unwind: {
             path: "$_attr",
-            "preserveNullAndEmptyArrays": false
+            "preserveNullAndEmptyArrays": true
         } },
         {$project: {
+            "_id": 0,
             "product id": "$_id",
             "name": "$_cls.name",
-            "alias": "$_attr.alias"
+            "alias": "$_attr.alias",
+            "price": "$values.PW_CURRENT_PRICE"
         } }
     ])
 }
 
-print(x)
 f(x).forEach(function(doc) {
-    print(JSON.stringify(doc, null, 3));
+    print(JSON.stringify(doc));
 });
 
