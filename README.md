@@ -71,3 +71,40 @@ FOL Version 2.0 (Ferguson.com)
  - saved doc to class_tree_docs took 132 ms
  - total number of queries 2564
 ```
+
+## Change Streams
+This example watches changes from the *product* collection.  Upon rereceiving an event, its posts `product._id` to a [MQTT server](https://test.mosquitto.org/).  The MQTT client is from [Eclipse Paho™ MQTT Python Client](https://github.com/eclipse/paho.mqtt.python).
+
+### Files
+
+- cs_watch.py - MongoDB change streams example in Python
+- cs_watch.js - MongoDB change streams example in Node.js
+- mqtt_listener.py - MQTT listener example
+- cs_sim.js - simulation file
+
+### Execution
+#### Start Change Stream using Python
+
+```
+./cs_watch.py [mongo connection uri]
+```
+
+#### Start Change Stream using Node.js
+```
+npm install mongodb --save
+npm install ascoltatori --save
+node ./cs_watch.js
+```
+
+#### Start MQTT Listener
+```
+./mqtt_listener.py
+```
+
+#### Run simulater
+Assuming `mongod` replica set instances are up and running.
+
+```
+mongo --quiet mongodb://localhost/DEV_EN_All_All?replicaSet=replset < cs_sim.js
+```
+
